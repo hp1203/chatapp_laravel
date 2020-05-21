@@ -8,10 +8,15 @@ require("./bootstrap");
 
 window.Vue = require("vue");
 import Vue from "vue";
+import Toaster from "v-toaster";
 
+// For Autoscroll
 import VueChatScroll from "vue-chat-scroll";
-
 Vue.use(VueChatScroll);
+
+// For Notification
+import "v-toaster/dist/v-toaster.css";
+Vue.use(Toaster, { timeout: 5000 });
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -41,7 +46,9 @@ const app = new Vue({
             color: [],
             time: []
         },
-        typing: ""
+        typing: "",
+        numberOfUser: 0,
+        onlineUsers: []
     },
     watch: {
         message() {
@@ -59,7 +66,8 @@ const app = new Vue({
                 this.chat.time.push(this.getTime());
                 window.axios
                     .post("/send", {
-                        message: this.message
+                        message: this.message,
+                        chat: this.chat
                     })
                     .then(function(response) {
                         console.log(response);
@@ -69,6 +77,26 @@ const app = new Vue({
                     });
                 this.message = "";
             }
+        },
+        getOldMessages() {
+            window.axios
+                .post("/getOldMessage")
+                .then(response => {
+                    console.log(response);
+                    if (response.data != "") {
+                        this.chat = response.data;
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        },
+        deleteSession() {
+            window.axios
+                .post("/deleteSession")
+                .then(response =>
+                    this.$toaster.success("Chat history is deleted")
+                );
         },
         getTime() {
             let date = new Date();
@@ -82,14 +110,29 @@ const app = new Vue({
             return strTime;
         }
     },
+    filters: {
+        isOnline(id) {
+            return this.onlineUsers.indexOf(id) > -1 ? true : false;
+        }
+    },
     mounted() {
+        this.getOldMessages();
         window.Echo.private("chat")
             .listen("ChatEvent", e => {
+                //console.log(e);
                 this.chat.message.push(e.message);
-                this.chat.user.push(e.user);
+                this.chat.user.push(e.user.name);
                 this.chat.color.push("warning");
                 this.chat.time.push(this.getTime());
-                console.log(e);
+                window.axios
+                    .post("/saveToSession", {
+                        chat: this.chat
+                    })
+                    .then(response => {})
+                    .catch(error => {
+                        console.log(error);
+                    });
+                //console.log(e);
             })
             .listenForWhisper("typing", e => {
                 if (e.name !== "") {
@@ -100,9 +143,19 @@ const app = new Vue({
             });
         window.Echo.join("chat")
             .here(users => {
-                console.log(users);
+                this.numberOfUser = users.length;
             })
-            .joining(user => {})
-            .leaving(user => {});
+            .joining(user => {
+                this.$toaster.success(user.user.name + " joind the chat room");
+                this.onlineUsers.push(user.user);
+                this.numberOfUser += 1;
+            })
+            .leaving(user => {
+                this.$toaster.error(user.user.name + " leaved the chat room");
+                this.onlineUsers = this.onlineUsers.filter(
+                    u => u.id !== user.user.id
+                );
+                this.numberOfUser -= 1;
+            });
     }
 });

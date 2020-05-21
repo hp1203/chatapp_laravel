@@ -2,19 +2,26 @@
 
 @section('content')
 <div class="container">
+    <div class="row">
+        <div class="col-12"><a href='' class="btn btn-warning btn-sm float-right mb-2"
+                @click.prevent='deleteSession'>Delete
+                Chats</a></div>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-4">
             <div class="card">
-                <div class="card-header">Users</div>
-
+                <div class="card-header">Users (Online: @{{numberOfUser}})</div>
                 <div class="card-body">
                     <ul class="list-group" style="max-height: 500px; overflow:scroll">
+                        @foreach ($users as $user)
                         <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong><span
-                                class="badge badge-Secondary float-right">Online</span>
+                            <strong>{{ ucfirst($user->name) }}</strong>
+                            <span class="badge badge-warning float-right"
+                                v-text="{{$user->id}} | isOnline">Online</span>
                             <br>
-                            <span>Last Message</span>
+                            <small>{{ $user->email }}</small>
                         </li>
+                        @endforeach
                     </ul>
                 </div>
             </div>
