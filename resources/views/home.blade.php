@@ -86,7 +86,8 @@
                 <div class="card-header">Dashboard</div>
                 <div class="card-body pb-2" style="overflow-x: scroll" v-chat-scroll>
                     <ul class="list-group">
-                        <message v-for="value in chat.message" :key=value.index color="success">
+                        <message v-for="value,index in chat.message" :key=index :color=chat.color[index]
+                            :user=chat.user[index]>
                             @{{value}}
                         </message>
                     </ul>

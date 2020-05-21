@@ -1918,7 +1918,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["color"],
+  props: ["color", "user"],
   computed: {
     className: function className() {
       return "list-group-item-" + this.color;
@@ -43595,7 +43595,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
+  return _c("div", { staticClass: "mb-2" }, [
     _c(
       "li",
       { staticClass: "list-group-item", class: _vm.className },
@@ -43604,7 +43604,7 @@ var render = function() {
     ),
     _vm._v(" "),
     _c("small", { staticClass: "badge float-right", class: _vm.badgeClass }, [
-      _vm._v("You")
+      _vm._v(_vm._s(_vm.user))
     ])
   ])
 }
@@ -55823,21 +55823,25 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   data: {
     message: "",
     chat: {
-      message: []
+      message: [],
+      user: [],
+      color: []
     }
   },
   methods: {
     send: function send() {
       if (this.message.length != 0) {
         this.chat.message.push(this.message);
+        this.chat.user.push("You");
+        this.chat.color.push("success");
         window.axios.post("/send", {
           message: this.message
         }).then(function (response) {
           console.log(response);
-          this.message = "";
         })["catch"](function (error) {
           console.log(error);
         });
+        this.message = "";
       }
     }
   },
@@ -55846,6 +55850,10 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
 
     window.Echo["private"]("chat").listen("ChatEvent", function (e) {
       _this.chat.message.push(e.message);
+
+      _this.chat.user.push(e.user);
+
+      _this.chat.color.push("warning");
 
       console.log(e);
     });

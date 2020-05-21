@@ -36,30 +36,36 @@ const app = new Vue({
     data: {
         message: "",
         chat: {
-            message: []
+            message: [],
+            user: [],
+            color: []
         }
     },
     methods: {
         send() {
             if (this.message.length != 0) {
                 this.chat.message.push(this.message);
+                this.chat.user.push("You");
+                this.chat.color.push("success");
                 window.axios
                     .post("/send", {
                         message: this.message
                     })
                     .then(function(response) {
                         console.log(response);
-                        this.message = "";
                     })
                     .catch(function(error) {
                         console.log(error);
                     });
+                this.message = "";
             }
         }
     },
     mounted() {
         window.Echo.private("chat").listen("ChatEvent", e => {
             this.chat.message.push(e.message);
+            this.chat.user.push(e.user);
+            this.chat.color.push("warning");
             console.log(e);
         });
     }
