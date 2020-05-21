@@ -38,7 +38,16 @@ const app = new Vue({
         chat: {
             message: [],
             user: [],
-            color: []
+            color: [],
+            time: []
+        },
+        typing: ""
+    },
+    watch: {
+        message() {
+            window.Echo.private("chat").whisper("typing", {
+                name: this.message
+            });
         }
     },
     methods: {
@@ -47,6 +56,7 @@ const app = new Vue({
                 this.chat.message.push(this.message);
                 this.chat.user.push("You");
                 this.chat.color.push("success");
+                this.chat.time.push(this.getTime());
                 window.axios
                     .post("/send", {
                         message: this.message
@@ -59,14 +69,40 @@ const app = new Vue({
                     });
                 this.message = "";
             }
+        },
+        getTime() {
+            let date = new Date();
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? "pm" : "am";
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            var strTime = hours + ":" + minutes + " " + ampm;
+            return strTime;
         }
     },
     mounted() {
-        window.Echo.private("chat").listen("ChatEvent", e => {
-            this.chat.message.push(e.message);
-            this.chat.user.push(e.user);
-            this.chat.color.push("warning");
-            console.log(e);
-        });
+        window.Echo.private("chat")
+            .listen("ChatEvent", e => {
+                this.chat.message.push(e.message);
+                this.chat.user.push(e.user);
+                this.chat.color.push("warning");
+                this.chat.time.push(this.getTime());
+                console.log(e);
+            })
+            .listenForWhisper("typing", e => {
+                if (e.name !== "") {
+                    this.typing = "Typing...";
+                } else {
+                    this.typing = "";
+                }
+            });
+        window.Echo.join("chat")
+            .here(users => {
+                console.log(users);
+            })
+            .joining(user => {})
+            .leaving(user => {});
     }
 });

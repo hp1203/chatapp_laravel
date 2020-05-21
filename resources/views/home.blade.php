@@ -10,84 +10,27 @@
                 <div class="card-body">
                     <ul class="list-group" style="max-height: 500px; overflow:scroll">
                         <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong><br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
+                            <strong>Himanshu Purohit</strong><span
+                                class="badge badge-Secondary float-right">Online</span>
                             <br>
                             <span>Last Message</span>
                         </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Himanshu Purohit</strong>
-                            <br>
-                            <span>Last Message</span>
-                        </li>
-
                     </ul>
                 </div>
             </div>
         </div>
         <div class="col-md-8">
-            <div class="card" style="height: 600px">
+            <div class="card" style="height: 550px">
                 {{-- <div class="d-flex flex-grow-1 align-items-center justify-content-center">
                     <h4>Select user to start conversation</h4>
                 </div> --}}
-                <div class="card-header">Dashboard</div>
+                <div class="card-header">
+                    <h4>Chat <span class="badge badge-pill badge-primary float-right">@{{typing}}</span></h4>
+                </div>
                 <div class="card-body pb-2" style="overflow-x: scroll" v-chat-scroll>
                     <ul class="list-group">
                         <message v-for="value,index in chat.message" :key=index :color=chat.color[index]
-                            :user=chat.user[index]>
+                            :time=chat.time[index] :user=chat.user[index]>
                             @{{value}}
                         </message>
                     </ul>

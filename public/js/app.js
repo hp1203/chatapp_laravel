@@ -1917,8 +1917,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ["color", "user"],
+  props: ["color", "user", "time"],
   computed: {
     className: function className() {
       return "list-group-item-" + this.color;
@@ -43598,9 +43601,19 @@ var render = function() {
   return _c("div", { staticClass: "mb-2" }, [
     _c(
       "li",
-      { staticClass: "list-group-item", class: _vm.className },
-      [_vm._t("default")],
-      2
+      {
+        staticClass: "d-flex flex-column list-group-item",
+        class: _vm.className
+      },
+      [
+        _c("span", { staticClass: "d-flex" }, [_vm._t("default")], 2),
+        _vm._v(" "),
+        _c(
+          "small",
+          { staticClass: "font-weight-lighter float-right align-self-end" },
+          [_vm._v(_vm._s(_vm.time))]
+        )
+      ]
     ),
     _vm._v(" "),
     _c("small", { staticClass: "badge float-right", class: _vm.badgeClass }, [
@@ -55825,7 +55838,16 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
     chat: {
       message: [],
       user: [],
-      color: []
+      color: [],
+      time: []
+    },
+    typing: ""
+  },
+  watch: {
+    message: function message() {
+      window.Echo["private"]("chat").whisper("typing", {
+        name: this.message
+      });
     }
   },
   methods: {
@@ -55834,6 +55856,7 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
         this.chat.message.push(this.message);
         this.chat.user.push("You");
         this.chat.color.push("success");
+        this.chat.time.push(this.getTime());
         window.axios.post("/send", {
           message: this.message
         }).then(function (response) {
@@ -55843,6 +55866,18 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
         });
         this.message = "";
       }
+    },
+    getTime: function getTime() {
+      var date = new Date();
+      var hours = date.getHours();
+      var minutes = date.getMinutes();
+      var ampm = hours >= 12 ? "pm" : "am";
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      var strTime = hours + ":" + minutes + " " + ampm;
+      return strTime;
     }
   },
   mounted: function mounted() {
@@ -55855,8 +55890,19 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
 
       _this.chat.color.push("warning");
 
+      _this.chat.time.push(_this.getTime());
+
       console.log(e);
+    }).listenForWhisper("typing", function (e) {
+      if (e.name !== "") {
+        _this.typing = "Typing...";
+      } else {
+        _this.typing = "";
+      }
     });
+    window.Echo.join("chat").here(function (users) {
+      console.log(users);
+    }).joining(function (user) {}).leaving(function (user) {});
   }
 });
 
