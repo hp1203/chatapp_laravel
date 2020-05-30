@@ -108,9 +108,7 @@ const app = new Vue({
             minutes = minutes < 10 ? "0" + minutes : minutes;
             var strTime = hours + ":" + minutes + " " + ampm;
             return strTime;
-        }
-    },
-    filters: {
+        },
         isOnline(id) {
             return this.onlineUsers.indexOf(id) > -1 ? true : false;
         }

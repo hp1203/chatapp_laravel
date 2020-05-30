@@ -16,8 +16,7 @@
                         @foreach ($users as $user)
                         <li class="list-group-item">
                             <strong>{{ ucfirst($user->name) }}</strong>
-                            <span class="badge badge-warning float-right"
-                                v-text="{{$user->id}} | isOnline">Online</span>
+                            <span class="badge badge-warning float-right">Online</span>
                             <br>
                             <small>{{ $user->email }}</small>
                         </li>
